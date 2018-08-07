@@ -1,0 +1,11 @@
+.vs
+.vscode
+
+.fake/
+.paket/paket.exe
+.paket/Paket.Restore.Targets
+packages/
+paket-files/
+
+**/bin
+**/obj
