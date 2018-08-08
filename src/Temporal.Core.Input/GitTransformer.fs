@@ -1,23 +1,16 @@
 namespace Temporal.Core.Input
 
-open System 
-open System.IO
+open System
 open Temporal.Core.Domain.Helpers
-open Temporal.Core.Domain.Computation
 
 module GitTransformer =
     let newCommit (x:string) = x.StartsWith "new commit"
 
-    let groupByCommit =
-        List.filter (not << String.IsNullOrWhiteSpace)
+    let ignoredString ignoredExtensions x =
+        (String.IsNullOrWhiteSpace x || hasExtensions ignoredExtensions x)
+
+    let groupByCommit ignoredExtensions =
+        List.filter (not << ignoredString ignoredExtensions)
         >> List.map (fun (s:string) -> s.Trim())
         >> split newCommit
         >> List.filter (not << List.isEmpty)
-
-    let countToString ((a:string, b:string), count:int) = count.ToString() + ": " + a + ", " + b
-
-    let getDependenciesFromFile = 
-        File.ReadAllLines
-        >> List.ofArray
-        >> groupByCommit
-        >> computeTemporalDependencies

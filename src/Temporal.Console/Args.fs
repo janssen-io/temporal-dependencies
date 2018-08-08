@@ -14,11 +14,24 @@ module Args =
         vcs: Vcs;
         method: Method;
         ignore: string list;
+        min: int
     }
+
+    let private tryParse (s:string) =
+        let mutable n = 0
+        if Int32.TryParse(s, ref n) then
+            Result.Ok(n)
+        else
+            Error (String.Format("Unparsable int: {0}", [n]))
 
     let rec private parseRec args options =
         match args with
         | [] -> Result.Ok options
+        | "--min" :: xs ->
+            match xs with
+            | num :: xs' ->
+                Result.bind (fun n -> parseRec xs' {options with min = n}) (tryParse num)
+            | []         -> Result.Error "--file requires an argument."
         | "--vcs" :: xs ->
             match xs with
             | "git" :: xs' -> parseRec xs' {options with vcs = Vcs.Git }
@@ -39,7 +52,8 @@ module Args =
         let defaultOptions = { 
             vcs = Vcs.Git;
             method = Method.Process;
-            ignore = []
+            ignore = [];
+            min = 3;
         }
         parseRec args defaultOptions
         

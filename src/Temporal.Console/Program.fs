@@ -1,12 +1,10 @@
 ﻿namespace Temporal.Console
 
-module Main =
-    open System
-    open System.IO
-    open Temporal.Core.Domain.Computation
-    open Temporal.Core.Input
-    open Temporal.Core.Input
+open System.IO
+open Temporal.Core.Domain.Computation
+open Temporal.Core.Input
 
+module Main =
     let getChanges (options:Args.Options) =
         match options.method with
         | Args.Method.LogFile file -> Result.Ok <| (List.ofArray <| File.ReadAllLines file)
@@ -14,16 +12,19 @@ module Main =
 
     let transformChanges (options:Args.Options) changes =
         match options.vcs with
-        | Args.Vcs.Git -> GitTransformer.groupByCommit changes
-        | Args.Vcs.Tfs -> TfTransformer.groupByChangeset changes
+        | Args.Vcs.Git -> GitTransformer.groupByCommit options.ignore changes
+        | Args.Vcs.Tfs -> TfTransformer.groupByChangeset options.ignore changes
 
-    let orderDependencies =
-        Map.toList >> List.sortByDescending (fun (_,count) -> count)
+    let orderDependencies (options:Args.Options) =
+        Map.toList 
+        >> List.sortByDescending (fun (_,count) -> count)
+        >> List.takeWhile (fun (_, c) -> c > options.min)
 
     let computeWithOptions (options:Args.Options) =
         getChanges options
         |> Result.map (transformChanges options)
         |> Result.map computeTemporalDependencies
+        |> Result.map (orderDependencies options)
 
     let printDeps =
         List.iter (fun ((a,b), c) ->
@@ -38,7 +39,6 @@ module Main =
         let dependencies = 
             Args.parse <| List.ofArray argv
             |> Result.bind computeWithOptions
-            |> Result.map orderDependencies
         match dependencies with
             | Ok dependencies -> 
                 printDeps dependencies

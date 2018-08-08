@@ -60,4 +60,4 @@ Target.create "All" ignore
   ==> "Test"
   ==> "All"
 
-Target.runOrDefault "BuildTests"
+Target.runOrDefault "All"
