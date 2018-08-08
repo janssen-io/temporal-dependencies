@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Args.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Temporal.Core.Domain\Temporal.Core.Domain.fsproj" />
+    <ProjectReference Include="..\Temporal.Core.Input\Temporal.Core.Input.fsproj" />
+  </ItemGroup>
+
+</Project>
