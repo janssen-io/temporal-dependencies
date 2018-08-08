@@ -1,9 +1,7 @@
 module Tests
 
-open Xunit
-open FsCheck
 open FsCheck.Xunit
-open Temporal.Core.Domain
+open Temporal.Core.Domain.Computation
 
 type Dep = Map<string, int>
 let sumMap = Map.fold (fun acc _ value -> acc + value) 0

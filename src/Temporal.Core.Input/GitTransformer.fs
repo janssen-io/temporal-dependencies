@@ -2,8 +2,8 @@ namespace Temporal.Core.Input
 
 open System 
 open System.IO
-open Temporal.Core.Helpers
-open Temporal.Core.Computation
+open Temporal.Core.Domain.Helpers
+open Temporal.Core.Domain.Computation
 
 module GitTransformer =
     let newCommit (x:string) = x.StartsWith "new commit"

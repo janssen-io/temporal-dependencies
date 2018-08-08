@@ -15,7 +15,7 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Temporal.Core\Temporal.Core.fsproj" />
+    <ProjectReference Include="..\..\src\Temporal.Core.Domain\Temporal.Core.Domain.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

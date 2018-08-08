@@ -1,4 +1,4 @@
-namespace Temporal.Core
+namespace Temporal.Core.Domain
 
 module Helpers = 
     type DependencyList = ((string * string) * int) list

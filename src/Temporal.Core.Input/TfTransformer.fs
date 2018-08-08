@@ -1,8 +1,8 @@
 namespace Temporal.Core.Input
 
 open System.IO
-open Temporal.Core.Helpers
-open Temporal.Core.Computation
+open Temporal.Core.Domain.Helpers
+open Temporal.Core.Domain.Computation
 
 module TfTransformer =
     let toFilename (line:string) =

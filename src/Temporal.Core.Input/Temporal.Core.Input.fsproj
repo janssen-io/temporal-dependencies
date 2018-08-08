@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Temporal.Core\Temporal.Core.fsproj" />
+    <ProjectReference Include="..\Temporal.Core.Domain\Temporal.Core.Domain.fsproj" />
   </ItemGroup>
 
 </Project>

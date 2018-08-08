@@ -4,10 +4,8 @@ open System
 open Xunit
 open FsCheck.Xunit
 
-open Temporal.Core.Domain
+open Temporal.Core.Domain.Computation
 open Temporal.Core.Input
-open Temporal.Core.Computation
-
 
 let filterEmpty = List.filter (not << String.IsNullOrWhiteSpace)
 let trimAll = List.map (fun (s:string) -> s.Trim())
