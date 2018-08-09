@@ -1,5 +1,7 @@
-.vs
-.vscode
+.vs/
+.vscode/
+
+.ionide/
 
 .fake/
 .paket/paket.exe
