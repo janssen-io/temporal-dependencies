@@ -30,3 +30,10 @@ module Helpers =
 
     let mapToList : Map<(string * string), int> -> DependencyList =
         Map.fold (fun acc key value -> (key, value) :: acc) []
+
+    let rec pair xs =
+        match xs with
+            | [] -> []
+            | x :: xs' -> 
+                List.fold (fun acc y -> (x,y) :: acc) [] xs'
+                |> (fun r -> List.append r (pair xs'))
