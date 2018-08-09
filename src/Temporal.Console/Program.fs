@@ -4,6 +4,7 @@ open System
 open System.IO
 open Temporal.Core.Domain.Computation
 open Temporal.Core.Input
+
 let getChanges (options:Args.Options) =
     match options.method with
     | Args.Method.LogFile file -> Result.Ok <| (List.ofArray <| File.ReadAllLines file)
@@ -14,10 +15,11 @@ let groupChanges (options:Args.Options) changes =
     | Args.Vcs.Git -> GitTransformer.groupByCommit options.ignore changes
     | Args.Vcs.Tfs -> TfTransformer.groupByChangeset options.ignore changes
 
-let private takeSome (n:int option) =
+let private takeSome (n:int option) xs =
+    let l = List.length xs
     match n with
-    | Some number -> List.take number
-    | None        -> id
+    | Some number -> List.take (Math.Min (number,l)) xs
+    | None        -> xs
 
 let orderDependencies (options:Args.Options) =
     Map.toList 
