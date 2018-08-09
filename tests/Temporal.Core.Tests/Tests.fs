@@ -7,7 +7,6 @@ open Temporal.Core.Domain.Computation
 let filterEmpty = List.filter (not << String.IsNullOrWhiteSpace)
 let depCount n = n * (n-1) / 2
 let maxMap = Map.fold (fun acc _ count -> if count > acc then count else acc) 0
-let cons x xs = x :: xs
 
 [<Property>]
 let ``Makes pairs of all different file names`` xs =

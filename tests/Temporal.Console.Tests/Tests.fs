@@ -1,10 +1,7 @@
 module Tests
 
-open System
 open Xunit
-
 open Temporal.Console
-open Xunit
 
 [<Theory>]
 [<InlineData("--vcs", "git")>]

@@ -1,35 +1,30 @@
-namespace Temporal.Core.Domain
+module Temporal.Core.Domain.Helpers
 
-module Helpers = 
-    type DependencyList = ((string * string) * int) list
-    let split (predicate:string -> bool) =
-        List.fold (fun acc x ->
-            match x with
-                | _ when predicate x -> [] :: acc
-                | x' -> (x' :: List.head acc) :: List.tail acc 
-        ) [[]]
-        >> List.rev
+type DependencyList = ((string * string) * int) list
 
-    let forAll predicate =
-        List.fold (fun acc x -> acc && predicate x) true
-    
-    let forAny =
-        List.fold (||) false
+let split (predicate:string -> bool) =
+    List.fold (fun acc x ->
+        match x with
+            | _ when predicate x -> [] :: acc
+            | x' -> (x' :: List.head acc) :: List.tail acc 
+    ) [[]]
+    >> List.rev
 
-    let hasExtension extension (filename: string)
-        = filename.EndsWith extension
+let forAny = List.fold (||) false
 
-    let hasExtensions xs (s:string) =
-        match xs with
-        | [] -> false
-        | _  -> forAny (List.map (s.EndsWith) xs)
+let hasExtension extension (filename: string) = filename.EndsWith extension
 
-    let mapToList : Map<(string * string), int> -> DependencyList =
-        Map.fold (fun acc key value -> (key, value) :: acc) []
+let hasExtensions xs (s:string) =
+    match xs with
+    | [] -> false
+    | _  -> forAny (List.map (s.EndsWith) xs)
 
-    let rec pair xs =
-        match xs with
-            | [] -> []
-            | x :: xs' -> 
-                List.fold (fun acc y -> (x,y) :: acc) [] xs'
-                |> (fun r -> List.append r (pair xs'))
+let mapToList : Map<(string * string), int> -> DependencyList =
+    Map.fold (fun acc key value -> (key, value) :: acc) []
+
+let rec pair xs =
+    match xs with
+    | [] -> []
+    | x :: xs' -> 
+        List.fold (fun acc y -> (x,y) :: acc) [] xs'
+        |> (fun r -> List.append r (pair xs'))
