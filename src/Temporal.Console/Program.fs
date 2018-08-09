@@ -16,10 +16,16 @@ module Main =
         | Args.Vcs.Git -> GitTransformer.groupByCommit options.ignore changes
         | Args.Vcs.Tfs -> TfTransformer.groupByChangeset options.ignore changes
 
+    let private takeSome (n:int option) =
+        match n with
+        | Some number -> List.take number
+        | None        -> id
+
     let orderDependencies (options:Args.Options) =
         Map.toList 
         >> List.sortByDescending (fun (_,count) -> count)
         >> List.takeWhile (fun (_, c) -> c >= options.min)
+        >> takeSome options.top
 
     let computeWithOptions (options:Args.Options) =
         getChanges options
@@ -42,6 +48,10 @@ module Main =
         Console.WriteLine("vcs:\t{0}", options.vcs)
         Console.WriteLine("ignore:\t[{0}]", String.Join("; ", options.ignore))
         Console.WriteLine("min:\t{0}", options.min)
+        match options.top with
+        | Some number -> Console.WriteLine("top:\t{0}", number)
+        | None        -> Console.WriteLine("top:\tall")
+        
         options
 
     [<EntryPoint>]

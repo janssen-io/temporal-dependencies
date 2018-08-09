@@ -24,10 +24,6 @@ module Helpers =
         | [] -> false
         | _  -> forAny (List.map (s.EndsWith) xs)
 
-    let takeSome (n:int): DependencyList -> DependencyList =
-        (List.sortByDescending (fun (_,count) -> count)
-        >> List.takeWhile (fun (_, count) -> count > n))
-
     let mapToList : Map<(string * string), int> -> DependencyList =
         Map.fold (fun acc key value -> (key, value) :: acc) []
 

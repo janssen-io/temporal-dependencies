@@ -45,3 +45,9 @@ let ``Parses min option`` =
     match Args.parse ["--min"; "5"] with
     | Ok options -> Assert.True (5 = options.min)
     | _ -> failwith "Unexpected Error Result"
+
+[<Fact>]
+let ``Parses top option`` =
+    match Args.parse ["--top"; "5"] with
+    | Ok options -> Assert.True (Some 5 = options.top)
+    | _ -> failwith "Unexpected Error Result"

@@ -16,7 +16,8 @@ module Args =
         vcs: Vcs;
         method: Method;
         ignore: string list;
-        min: int
+        min: int;
+        top: int option
     }
 
     let private tryParse (s:string) =
@@ -32,6 +33,7 @@ module Args =
         message.AppendLine "--help\t\tShow this message."
         |> append "--vcs (git|tfs)\tUse Git or TFS to view changes. (Default: git)"
         |> append "--min n\t\tOnly show dependencies that occur n times or more. (Default: 3)"
+        |> append "--top n\t\tOnly show the top n dependencies. (Default: all)"
         |> append "--ignore a,b,c\tIgnored extensions (comma separated). (Default: nothing)"
         |> append "--file\t\tRead changes from file instead of calling tfs/git. (Default: nothing)"
         |> (fun (s:StringBuilder) -> s.ToString())
@@ -40,6 +42,11 @@ module Args =
         match args with
         | [] -> Ok options
         | "--help" :: _ -> Error helpMessage
+        | "--top" :: xs ->
+            match xs with
+            | num :: xs' ->
+                Result.bind (fun n -> parseRec xs' {options with top = Some n}) (tryParse num)
+            | []         -> Error "--top requires an integer argument."
         | "--min" :: xs ->
             match xs with
             | num :: xs' ->
@@ -67,6 +74,7 @@ module Args =
             method = Method.Process;
             ignore = [];
             min = 3;
+            top = None
         }
         parseRec args defaultOptions
         
