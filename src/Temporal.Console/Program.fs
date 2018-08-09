@@ -11,7 +11,7 @@ module Main =
         | Args.Method.LogFile file -> Result.Ok <| (List.ofArray <| File.ReadAllLines file)
         | Args.Method.Process -> Result.Error <| "Process is not implemented yet."
 
-    let transformChanges (options:Args.Options) changes =
+    let groupChanges (options:Args.Options) changes =
         match options.vcs with
         | Args.Vcs.Git -> GitTransformer.groupByCommit options.ignore changes
         | Args.Vcs.Tfs -> TfTransformer.groupByChangeset options.ignore changes
@@ -29,7 +29,7 @@ module Main =
 
     let computeWithOptions (options:Args.Options) =
         getChanges options
-        |> Result.map (transformChanges options)
+        |> Result.map (groupChanges options)
         |> Result.map computeTemporalDependencies
         |> Result.map (orderDependencies options)
 
