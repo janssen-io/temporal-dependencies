@@ -12,15 +12,10 @@ let split (predicate:string -> bool) =
 
 let forAny = List.fold (||) false
 
-let hasExtension extension (filename: string) = filename.EndsWith extension
-
 let hasExtensions xs (s:string) =
     match xs with
     | [] -> false
     | _  -> forAny (List.map (s.EndsWith) xs)
-
-let mapToList : Map<(string * string), int> -> DependencyList =
-    Map.fold (fun acc key value -> (key, value) :: acc) []
 
 let rec pair xs =
     match xs with
