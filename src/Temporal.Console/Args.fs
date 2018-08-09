@@ -1,6 +1,8 @@
 namespace Temporal.Console
 
 open System
+open System.Text
+
 module Args =
     type Vcs =
         | Git
@@ -22,9 +24,22 @@ module Args =
         | true, v  -> Ok v
         | false, _ -> Error (sprintf "Invalid integer '%s'" s)
 
+    let private append (s:string) (sb:StringBuilder) =
+        sb.AppendLine s
+
+    let helpMessage =
+        let message = new StringBuilder()
+        message.AppendLine "--help\t\tShow this message."
+        |> append "--vcs (git|tfs)\tUse Git or TFS to view changes. (Default: git)"
+        |> append "--min n\t\tOnly show dependencies that occur n times or more. (Default: 3)"
+        |> append "--ignore a,b,c\tIgnored extensions (comma separated). (Default: nothing)"
+        |> append "--file\t\tRead changes from file instead of calling tfs/git. (Default: nothing)"
+        |> (fun (s:StringBuilder) -> s.ToString())
+
     let rec private parseRec args options =
         match args with
         | [] -> Ok options
+        | "--help" :: _ -> Error helpMessage
         | "--min" :: xs ->
             match xs with
             | num :: xs' ->
@@ -38,7 +53,7 @@ module Args =
         | "--file" :: xs ->
             match xs with
             | log :: xs' -> parseRec xs' {options with method = Method.LogFile log}
-            | []         -> Error "--file requires an argument."
+            | []         -> Error "--file requires an argument. Please use the --file argument[."
         | "--ignore" :: xs ->
             match xs with
             | extensions :: xs' ->
