@@ -39,3 +39,9 @@ let ``Parses ignore option`` =
     match Args.parse ["--ignore"; ".sln,.csproj,.fsproj"] with
     | Ok options -> Assert.True ([".sln";".csproj";".fsproj"] = options.ignore)
     | _ -> failwith "Unexpected Error Result"
+
+[<Fact>]
+let ``Parses min option`` =
+    match Args.parse ["--min"; "5"] with
+    | Ok options -> Assert.True (5 = options.min)
+    | _ -> failwith "Unexpected Error Result"

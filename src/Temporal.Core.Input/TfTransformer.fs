@@ -20,7 +20,8 @@ module TfTransformer =
         (String.IsNullOrWhiteSpace x || hasExtensions ignoredExtensions x)
 
     let groupByChangeset ignoredExtensions =
-        List.filter (not << ignoredString ignoredExtensions)
+        List.map (fun (s:string) -> s.Trim())
+        >> List.filter (not << ignoredString ignoredExtensions)
         >> split (fun line -> line.StartsWith "Changeset:")
         >> List.map getEditedFilenames
 

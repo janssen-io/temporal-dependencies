@@ -13,16 +13,16 @@ module Helpers =
     let forAll predicate =
         List.fold (fun acc x -> acc && predicate x) true
     
-    let forAny predicate =
-        List.fold (fun acc x -> acc || predicate x) false
+    let forAny =
+        List.fold (||) false
 
     let hasExtension extension (filename: string)
         = filename.EndsWith extension
 
-    let hasExtensions xs s =
+    let hasExtensions xs (s:string) =
         match xs with
         | [] -> false
-        | _  -> forAny (hasExtension s) xs
+        | _  -> forAny (List.map (s.EndsWith) xs)
 
     let takeSome (n:int): DependencyList -> DependencyList =
         (List.sortByDescending (fun (_,count) -> count)

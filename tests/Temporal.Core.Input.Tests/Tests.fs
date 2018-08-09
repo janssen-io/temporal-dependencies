@@ -15,7 +15,7 @@ let tmap f (a, b) = (f a, f b)
 let sumMap : Map<string * string, int> -> int = Map.fold (fun acc _ count -> acc + count) 0
 
 [<Property>]
-let ``Splits on "new commit"`` xs ys =
+let ``git - Splits on "new commit"`` xs ys =
     let (xs', ys') = tmap (filterEmpty >> trimAll >> List.distinct) (xs, ys)
     let zs = List.collect id [["new commit"];xs';["new commit"];ys']
     GitTransformer.groupByCommit [] zs
@@ -30,9 +30,27 @@ let bypass f x =
     x
 
 [<Property>]
-let ``Splits on "Changeset: "`` xs ys =
+let ``tfs - Splits on "Changeset: "`` xs ys =
     let (xs', ys') = tmap (filterEmpty >> trimAll >> List.distinct >> prependEdit) (xs, ys)
     let zs = List.collect id [["Changeset:"];xs';["Changeset:"];ys']
     TfTransformer.groupByChangeset [] zs
     |> computeTemporalDependencies
     |> sumMap = List.sumBy (depCount << List.length) [xs'; ys']
+
+
+let forAll = List.fold (&&) true
+let hasNoExtension (ext:string) xs = forAll (List.map (fun (s:string) -> not (s.EndsWith ext)) xs)
+
+[<Property>]
+let ``tfs - Ignores the given file extensions`` (ext:string) =
+    (String.IsNullOrWhiteSpace ext) || (
+        let xs = ["Changeset:"; "edit $/foo.cs"; "edit $/bar.cs"; "edit $/foobar" + ext]
+        TfTransformer.groupByChangeset [ext] xs
+        |> (List.last >> hasNoExtension ext))
+
+[<Property>]
+let ``git - Ignores the given file extensions`` (ext:string) =
+    (String.IsNullOrWhiteSpace ext) || (
+        let xs = ["new commit:"; "foo.cs"; "bar.cs"; "foobar" + ext]
+        GitTransformer.groupByCommit [ext] xs
+        |> (List.last >> hasNoExtension ext))

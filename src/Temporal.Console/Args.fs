@@ -18,35 +18,33 @@ module Args =
     }
 
     let private tryParse (s:string) =
-        let mutable n = 0
-        if Int32.TryParse(s, ref n) then
-            Result.Ok(n)
-        else
-            Error (String.Format("Unparsable int: {0}", [n]))
+        match Int32.TryParse s with
+        | true, v  -> Ok v
+        | false, _ -> Error (sprintf "Invalid integer '%s'" s)
 
     let rec private parseRec args options =
         match args with
-        | [] -> Result.Ok options
+        | [] -> Ok options
         | "--min" :: xs ->
             match xs with
             | num :: xs' ->
                 Result.bind (fun n -> parseRec xs' {options with min = n}) (tryParse num)
-            | []         -> Result.Error "--file requires an argument."
+            | []         -> Error "--min requires an integer argument."
         | "--vcs" :: xs ->
             match xs with
             | "git" :: xs' -> parseRec xs' {options with vcs = Vcs.Git }
             | "tfs" :: xs' -> parseRec xs' {options with vcs = Vcs.Tfs }
-            | _            -> Result.Error "Invalid argument for --vcs. Expected 'git' or 'tfs'."
+            | _            -> Error "Invalid argument for --vcs. Expected 'git' or 'tfs'."
         | "--file" :: xs ->
             match xs with
             | log :: xs' -> parseRec xs' {options with method = Method.LogFile log}
-            | []         -> Result.Error "--file requires an argument."
+            | []         -> Error "--file requires an argument."
         | "--ignore" :: xs ->
             match xs with
             | extensions :: xs' ->
                 parseRec xs' {options with ignore = List.ofArray <| extensions.Split(',')}
-            | _ -> Result.Error "--ignore requires comma separated extensions as argument."
-        | other -> Result.Error <| "Unknown argument: " + (String.Join(" ", other))
+            | _ -> Error "--ignore requires comma separated extensions as argument."
+        | other -> Error <| "Unknown argument: " + (String.Join(" ", other))
 
     let parse args =
         let defaultOptions = { 
