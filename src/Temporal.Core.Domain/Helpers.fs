@@ -1,7 +1,8 @@
 module Temporal.Core.Domain.Helpers
 
-type DependencyList = ((string * string) * int) list
+let hasExtensions xs (s:string) = List.exists (s.EndsWith) xs
 
+/// Split a list on items that fulfill a predicate.
 let split (predicate:string -> bool) =
     List.fold (fun acc x ->
         match x with
@@ -10,13 +11,9 @@ let split (predicate:string -> bool) =
     ) [[]]
     >> List.rev
 
-let forAny = List.fold (||) false
-
-let hasExtensions xs (s:string) =
-    match xs with
-    | [] -> false
-    | _  -> forAny (List.map (s.EndsWith) xs)
-
+/// Pair all items of a list.
+/// 
+/// Example: pair [1,2,3] = [(1,2);(1;3);(2;3)]
 let rec pair xs =
     match xs with
     | [] -> []

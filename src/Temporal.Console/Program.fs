@@ -23,15 +23,16 @@ let private takeSome (n:int option) xs =
 
 let orderDependencies (options:Args.Options) =
     Map.toList 
-    >> List.sortByDescending (fun (_,count) -> count)
+    >> List.sortByDescending snd
     >> List.takeWhile (fun (_, c) -> c >= options.min)
     >> takeSome options.top
 
 let computeWithOptions (options:Args.Options) =
-    getChanges options
-    |> Result.map (groupChanges options)
-    |> Result.map computeTemporalDependencies
-    |> Result.map (orderDependencies options)
+    getChanges options 
+    |> Result.map (
+      (groupChanges options)
+      >> computeTemporalDependencies
+      >> (orderDependencies options))
 
 let printDeps =
     List.iter (fun ((a,b), c) ->
@@ -62,7 +63,7 @@ let main argv =
         |> Result.bind computeWithOptions
     match dependencies with
         | Ok dependencies -> 
-            printDeps dependencies
+            do printDeps dependencies
             0
         | Error message   -> 
             printf "%s" message

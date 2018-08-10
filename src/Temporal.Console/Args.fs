@@ -12,10 +12,10 @@ type Method =
     | Process
 
 type Options = {
-    vcs: Vcs;
-    method: Method;
-    ignore: string list;
-    min: int;
+    vcs: Vcs
+    method: Method
+    ignore: string list
+    min: int
     top: int option
 }
 
@@ -69,10 +69,10 @@ let rec private parseRec args options =
 
 let parse args =
     let defaultOptions = { 
-        vcs = Vcs.Git;
-        method = Method.Process;
-        ignore = [];
-        min = 3;
+        vcs = Vcs.Git
+        method = Method.Process
+        ignore = []
+        min = 3
         top = None
     }
     parseRec args defaultOptions
