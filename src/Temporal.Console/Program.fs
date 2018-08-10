@@ -5,15 +5,12 @@ open System.IO
 open Temporal.Core.Domain.Computation
 open Temporal.Core.Input
 
-let getChanges (options:Args.Options) =
-    match options.method with
-    | Args.Method.LogFile file -> Result.Ok <| (List.ofArray <| File.ReadAllLines file)
-    | Args.Method.Process -> Result.Error <| "Process is not implemented yet."
+open Args
 
-let groupChanges (options:Args.Options) changes =
+let groupChanges (options:Options) changes =
     match options.vcs with
-    | Args.Vcs.Git -> GitTransformer.groupByCommit options.ignore changes
-    | Args.Vcs.Tfs -> TfTransformer.groupByChangeset options.ignore changes
+    | Vcs.Git -> GitTransformer.groupByCommit options.excluded changes
+    | Vcs.Tfs -> TfTransformer.groupByChangeset options.excluded changes
 
 let private takeSome (n:int option) xs =
     let l = List.length xs
@@ -21,20 +18,20 @@ let private takeSome (n:int option) xs =
     | Some number -> List.take (Math.Min (number,l)) xs
     | None        -> xs
 
-let orderDependencies (options:Args.Options) =
+let orderDependencies (options:Options) =
     Map.toList 
     >> List.sortByDescending snd
     >> List.takeWhile (fun (_, c) -> c >= options.min)
     >> takeSome options.top
 
-let computeWithOptions (options:Args.Options) =
-    getChanges options 
-    |> Result.map (
-      (groupChanges options)
-      >> computeTemporalDependencies
-      >> (orderDependencies options))
+let computeWithOptions (options:Options) =
+    File.ReadAllLines options.file
+    |> Array.toList
+    |> groupChanges options
+    |> computeTemporalDependencies
+    |> orderDependencies options
 
-let printDeps =
+let printDependencies =
     List.iter (fun ((a,b), c) ->
         printfn "%i" c
         printfn "%s" a
@@ -43,28 +40,23 @@ let printDeps =
     )
 
 let printOptions (options:Args.Options) =
-    match options.method with
-    | Args.Method.LogFile f -> Console.WriteLine("Method:\t{0} (file)", f)
-    | Args.Method.Process -> Console.WriteLine("Method:\tProcess")
-    Console.WriteLine("vcs:\t{0}", options.vcs)
-    Console.WriteLine("ignore:\t[{0}]", String.Join("; ", options.ignore))
-    Console.WriteLine("min:\t{0}", options.min)
+    printfn "File:\t%s (file)" options.file
+    printfn "VCS:\t%A" options.vcs
+    printfn "Include:\t[%s]" (String.Join ("; ", options.included))
+    printfn "Exclude:\t[%s]" (String.Join ("; ", options.excluded))
+    printfn "min:\t%i" options.min
     match options.top with
-    | Some number -> Console.WriteLine("top:\t{0}", number)
-    | None        -> Console.WriteLine("top:\tall")
-    
-    options
+    | Some number -> printfn "top:\t%i" number
+    | None        -> printfn "top:\t%s" "all"
+
+let bypass f x =
+    f x
+    x
 
 [<EntryPoint>]
 let main argv =
-    let dependencies = 
-        Args.parse <| List.ofArray argv
-        |> Result.map printOptions
-        |> Result.bind computeWithOptions
-    match dependencies with
-        | Ok dependencies -> 
-            do printDeps dependencies
-            0
-        | Error message   -> 
-            printf "%s" message
-            1
+    Args.parse argv
+    |> bypass printOptions
+    |> computeWithOptions
+    |> printDependencies
+    0

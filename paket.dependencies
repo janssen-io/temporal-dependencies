@@ -1,6 +1,7 @@
 source https://api.nuget.org/v3/index.json
 nuget FsCheck
 nuget FsCheck.Xunit
+nuget Argu
 
 // [ FAKE GROUP ]
 group Build
