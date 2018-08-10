@@ -1,13 +1,9 @@
 #load ".fake/build.fsx/intellisense.fsx"
-open System.Runtime.InteropServices
 open Fake.DotNet
 open Fake.Core
-open Fake.DotNet
 open Fake.IO
-open Fake.IO.FileSystemOperators
 open Fake.IO.Globbing.Operators
 open Fake.Core.TargetOperators
-
 
 let buildConfig
   = let config = Environment.environVarOrDefault "config" "Debug"
@@ -27,7 +23,9 @@ let tests = "tests/**/"
 
 let build dir = 
     !! (dir + "*.*proj")
-    |> Seq.iter (DotNet.build id)
+    |> Seq.iter (DotNet.build (fun p ->
+        { p with Configuration = buildConfig }
+    ))
 
 let clean dir = 
     !! (dir + "bin")
