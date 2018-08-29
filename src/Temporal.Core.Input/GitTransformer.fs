@@ -5,11 +5,7 @@ open Temporal.Core.Domain.Helpers
 
 let newCommit (x:string) = x.StartsWith "new commit"
 
-let ignoredString ignoredExtensions x =
-    (String.IsNullOrWhiteSpace x || hasExtensions ignoredExtensions x)
-
-let groupByCommit ignoredExtensions =
-    List.filter (not << ignoredString ignoredExtensions)
-    >> List.map (fun (s:string) -> s.Trim())
-    >> split newCommit
+let groupByCommit incl excl =
+    split newCommit
+    >> List.map (List.filter (Common.isIncludedAndNotExcluded incl excl))
     >> List.filter (not << List.isEmpty)

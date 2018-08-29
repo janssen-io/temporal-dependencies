@@ -47,7 +47,8 @@ Target.create "BuildTests" (fun _ ->
 
 Target.create "Test" (fun _ ->
     !! "tests/**/*.*proj"
-    |> Seq.iter (DotNet.test (fun ps ->
+    |> Array.ofSeq 
+    |> Array.Parallel.iter (DotNet.test (fun ps ->
         { ps with 
             NoBuild = true
             Configuration = buildConfig
@@ -57,7 +58,8 @@ Target.create "Test" (fun _ ->
 
 Target.create "JustTest" (fun _ ->
     !! "tests/**/*.*proj"
-    |> Seq.iter (DotNet.test (fun ps ->
+    |> Array.ofSeq 
+    |> Array.Parallel.iter (DotNet.test (fun ps ->
         { ps with 
             NoBuild = true
             Configuration = buildConfig

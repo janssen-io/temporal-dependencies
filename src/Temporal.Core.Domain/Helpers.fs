@@ -1,7 +1,5 @@
 module Temporal.Core.Domain.Helpers
 
-let hasExtensions xs (s:string) = List.exists (s.EndsWith) xs
-
 /// Split a list on items that fulfill a predicate.
 let split (predicate:string -> bool) =
     List.fold (fun acc x ->

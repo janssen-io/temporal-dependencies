@@ -9,8 +9,8 @@ open Args
 
 let groupChanges (options:Options) changes =
     match options.vcs with
-    | Vcs.Git -> GitTransformer.groupByCommit options.excluded changes
-    | Vcs.Tfs -> TfTransformer.groupByChangeset options.excluded changes
+    | Vcs.Git -> GitTransformer.groupByCommit options.included options.excluded changes
+    | Vcs.Tfs -> TfTransformer.groupByChangeset options.included options.excluded changes
 
 let private takeSome (n:int option) xs =
     let l = List.length xs
