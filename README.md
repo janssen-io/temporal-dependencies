@@ -15,7 +15,7 @@ Several arguments can be provided to filter the output:
 * top n: only show the top _n_ dependencies.
 
 ## Temporal.Core.Input
-This project contains all necessary logic to parse the output of `git log --name-only --format="new commit"` or `tf hist \recursive \format:detailed`. For git, it assumes that the commits start with 'new commit' followed by the changed filenames on separate lines. For TFS, the detailed format is assumed.
+This project contains all necessary logic to parse the output of `git log --name-only --format="new commit %H"` or `tf hist \recursive \format:detailed`. For git, it assumes that the commits start with 'new commit' followed by the changed filenames on separate lines. For TFS, the detailed format is assumed.
 
 ## Temporal.Core.Domain
 This project contains all the logic to compute the actual dependencies.
